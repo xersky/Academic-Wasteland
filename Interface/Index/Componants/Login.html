@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <title>Login</title>
+</head>
+<body>
+    <section class="hero is-primary is-fullheight">
+    <div class="hero-body">
+        <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+            <form class="box"  method="post"  action="../../../Server/LoginHandler.php">
+                <div class="field">
+                <label for="" class="label">Email</label>
+                <div class="control has-icons-left">
+                    <input class = "input"  type = "text" name = "username" placeholder = "nom compte" required autofocus>
+                    <span class="icon is-small is-left">
+                    <i class="fa fa-envelope"></i>
+                    </span>
+                </div>
+                </div>
+                <div class="field">
+                <label for="" class="label">Password</label>
+                <div class="control has-icons-left">
+                    <input class="input" type = "password" name = "password" placeholder="*******" required>
+                    <span class="icon is-small is-left">
+                       <i class="fa fa-lock"></i>
+                    </span>
+                </div>
+                <div class="field">
+                <button class="button is-success" style="margin:5% 5% 0% 0%;" type = "submit" name="login"> 
+                    Login
+                </button>
+                </div>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>
+</body>
+</html>
