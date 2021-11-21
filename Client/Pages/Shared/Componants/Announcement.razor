@@ -1,0 +1,77 @@
+@inject IDbLayer db
+@inject ILocalStorage storage
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar Color="Color.Secondary">@Index</MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">$ @Data?.price</MudText>
+            <MudText Typo="Typo.body2">@Data?.house?.address?.toString</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Link="@Link(Data?.id)" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    @if((Data?.house?.pictures?.Length ?? 0) > 0){
+        <MudCardMedia Image="@Data?.house?.pictures[0].data" Height="250" />
+    } else {
+        <MudCardMedia Image="@Icons.Material.Filled.Photo" Height="250" />
+    }
+    <MudCardContent>
+        <MudText Typo="Typo.body2">@Data?.house?.description</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" OnClick="ReserveClick" />
+        <div class="d-flex flex-column align-center">
+            <MudRating T="int" SelectedValue="@Data.AvgRating" SelectedValueChanged="HandleRate" HoveredValueChanged="HandleHoveredValueChanged" />
+        </div>
+
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public int Index {get; set;} = 0;
+    private State role = State.Rentee;
+    [Parameter] public AnnouncementT Data {get; set;} = null;
+    private int? activeVal;
+    private string Link(int? id) => role == State.Rentee ? $"/Check/{id}" : $"/Form/{id}";
+    private void HandleHoveredValueChanged(int? val) => activeVal = val;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = await storage.FetchAsync<UserT>("user");
+        if(client is not null)
+            role = client.role;
+    }
+    private async Task HandleRate(int rate){
+        Data.AvgRating = rate;
+        db.Add(new ReviewT {
+            id = (new Random()).Next(),
+            announcementID = Data.id,
+            rating = rate
+        });
+    }
+    private async Task ReserveClick(){
+        var rnd = new Random();
+        var client = await storage.FetchAsync<UserT>("user");
+        if( client is not null && client.role == State.Rentee){
+            var res = db.GetRAll().Where(x =>x.announcementId == Data.id).FirstOrDefault();
+            if(res is not null){
+                res.users = (from user in res.users select user).Append(client).ToArray();
+                db.Update(res);
+            } else {
+                var newRes = new ReservationT{
+                    id = rnd.Next(1, 100000),
+                    startPeriod = DateTime.Now,
+                    endPeriod = DateTime.Now.AddDays(rnd.Next(1, 10)),
+                    createdAt = DateTime.Now,
+                    announcementId = Data.id,
+                    owner = db.GetU(Data.idOwner) ?? TypeEnhancements.getRandomePer(),
+                    users = new UserT[]{client}
+                };
+                db.Add(newRes);
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+@page "/Auth"
+@page "/Auth/{Logout?}"
+@inject NavigationManager Navigator
+@inject IAuthentificator auth
+<MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Login/Register</MudText>
+<MudGrid>
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+        <MudItem xs="0" sm="6" md="7">
+            <MudCard Class="pa-5">
+                <MudPaper Elevation="2" Class="pa-4" Style="height : 95vh;">
+                    <MudCarousel Style="height:100%;" AutoCycle="true" TData="object">
+                        <MudCarouselItem Transition="Transition.Slide" Color="@Color.Primary">
+                            <div class="d-flex" style="height:100%">
+                                <img src="https://i.redd.it/0qvombcpvij61.jpg"/>
+                            </div>
+                        </MudCarouselItem>
+                        <MudCarouselItem Transition="Transition.Slide" Color="@Color.Secondary">
+                            <div class="d-flex" style="height:100%">
+                                <img src="https://graphisoft.com/content/uploads/2020/03/twinmotion-urban-1024x511.jpg"/>
+                            </div>
+                        </MudCarouselItem>
+                        <MudCarouselItem Transition="Transition.Slide">
+                            <div class="d-flex" style="height:100%">
+                                <img src="https://cdn2.unrealengine.com/Unreal+Engine%2Ftwinmotion%2Fshare%2FTwinmotion_share_img_homepage-1200x630-968e7443e36839f0fc398ce8863ca9ba8dda07ba.jpg"/>
+                            </div>
+                        </MudCarouselItem>
+                    </MudCarousel>
+                </MudPaper>
+            </MudCard>
+        </MudItem>
+    </MudHidden>
+    <MudItem xs="12" sm="6" md="5">
+        <MudCard Class="pa-5">
+            <MudPaper Elevation="2" Class="pa-4" Style="height : 95vh;">
+                <MudTabs Elevation="4" Rounded="true" AlwaysShowScrollButtons="true" Color="@Color.Info" Class="mt-4">
+                    <MudTabPanel Text="Login" ><Login/></MudTabPanel>
+                    <MudTabPanel Text="Register"><Register/></MudTabPanel>
+                </MudTabs>
+            </MudPaper>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public string? Logout { get; set; }
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<string>(nameof(Logout), out var value))
+        {
+            if(value == "Logout"){
+                await auth.Logout();
+                Navigator.NavigateTo("/Auth");
+            }
+        }
+        await base.SetParametersAsync(parameters);
+    }
+}

@@ -1,0 +1,47 @@
+@page "/Client/{id:int}"
+@implements IDisposable
+@inject IDbLayer Manager
+<MudTabs Outlined="true" Position="Position.Bottom" Rounded="true" Border="true"
+    ApplyEffectsToContainer="true">
+    <MudTabPanel Text="Store">
+        <Showcase Announcemets="Store"/>
+    </MudTabPanel>
+    <MudTabPanel Text="Add Reservation">
+        <Checkout/>
+    </MudTabPanel>
+    <MudTabPanel Text="History">
+        <History Reservations="Reservations" Announcements="Announcements"/>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter] public int id { get; set; } = 0;
+    public List<AnnouncementT> Store { get; set; } = new();
+    public List<AnnouncementT> Announcements { get; set; } = new();
+    public List<ReservationT> Reservations { get; set; } = new();
+    System.Threading.Timer timer;
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<int>(nameof(id), out var value))
+        {
+            timer = new System.Threading.Timer(async _ =>
+            {
+                Reservations = Manager.GetR(value, State.Rentee).ToList();
+                Store = Manager.GetAAll().Where(i => !Reservations.Any(r => r.announcementId == i.id)).ToList();
+                foreach (var item in Reservations)
+                {
+                    System.Console.WriteLine(item);   
+                }
+                Announcements = Manager.GetA(value, State.Rentee).ToList();
+                await InvokeAsync(StateHasChanged);
+            }, null, 0, 5000);
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+    
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

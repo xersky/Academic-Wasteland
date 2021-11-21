@@ -1,0 +1,38 @@
+﻿@page "/"
+@inject ISnapshot Fetcher
+@inject IDbLayer Database
+@if(datafetched){
+    <MainPage/>
+} else {
+    <div style = "  display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 75vh;">
+
+        <MudProgressCircular Color="Color.Primary"  Indeterminate="true" Style= "height:175px; width:175px;"/>
+    </div>
+}
+
+@code {
+    bool datafetched = false;
+    protected override async void OnInitialized()
+    {
+        try
+        {
+            var dbsnap = await Fetcher.GetSnapshotAsync();
+            Database.LoadFromSnapshot(dbsnap);
+            System.Console.WriteLine("Loaded");
+            datafetched = true;
+        }
+        catch (Exception ex)
+        {
+            datafetched = true;
+        }
+        finally
+        {
+            base.OnInitialized();
+            StateHasChanged();
+        }
+    }
+
+}

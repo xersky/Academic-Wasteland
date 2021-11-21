@@ -1,0 +1,184 @@
+@page "/Form/{id:int}"
+@inject IDbLayer Database
+<MudForm Model="@Announcement" @ref="@form">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="4">
+            <MudCardContent>
+                <MudNumericField Variant="Variant.Outlined" Adornment="Adornment.Start"  HideSpinButtons="true" 
+                            @bind-Value="Announcement.house.roomC"		
+                            Immediate="true"
+                            Label="Numbber of Rooms" />
+
+                <MudNumericField Variant="Variant.Outlined" Adornment="Adornment.Start"  HideSpinButtons="true" 
+                            @bind-Value="Announcement.house.bedroomsC"	
+                            Immediate="true"
+                            Label="Numbber of Bedrooms" />
+
+                <MudNumericField Variant="Variant.Outlined" Adornment="Adornment.Start" HideSpinButtons="true" 
+                            @bind-Value="Announcement.house.bathroomsC"		
+                            Immediate="true"
+                            Label="Numbber of Bathrooms" />
+
+                <MudTextField @bind-Value="Announcement.house.description"
+                            Immediate="true"
+                            Label="a brief description" />
+
+                <MudTextField @bind-Value="Announcement.house.address.city"
+                            Immediate="true"
+                            Label="City" />
+
+                <MudTextField @bind-Value="Announcement.house.address.street"
+                            Immediate="true"
+                            Label="Street" />
+
+                <MudTextField @bind-Value="Announcement.house.address.zip"
+                            Immediate="true"
+                            Label="Zip" />
+            </MudCardContent>
+            <MudCardContent>
+                <MudNumericField Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" HideSpinButtons="true" 
+                    @bind-Value="Announcement.price"		
+                    Immediate="true"
+                    Label="Suggested Price" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" FullWidth="true" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Add</MudButton>
+            </MudCardActions>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="8">
+            <MudCardContent>
+                @if(pics.Count() == 0) {
+                    <MudSkeleton />
+                    <MudSkeleton SkeletonType="SkeletonType.Circle" Width="50px" Height="50px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="300px" />
+                } else {
+                    <MudCarousel Style="height:300px;" AutoCycle="true" TData="object">
+                        @foreach (var img in pics)
+                        {
+                            <MudCarouselItem Transition="Transition.Slide" Color="@Color.Primary">
+                                <div class="d-flex" style="height:100%">
+                                    <img src="@img.data" style="width: 60vw;
+                                                                height: 300px;
+                                                                object-fit: fill;"/>
+                                </div>
+                            </MudCarouselItem>
+                        }
+                    </MudCarousel>
+                }
+                <InputFile id="fileInput112" OnChange="UploadFiles" hidden multiple accept=".jpg, .jpeg, .png" />
+                <MudGrid>
+                    <MudItem xs="6" md="6" sm="6">
+                        <MudButton HtmlTag="label"
+                                Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                StartIcon="@Icons.Filled.CloudUpload"
+                                FullWidth="true"
+                                for="fileInput112">
+                            Upload images
+                        </MudButton>
+                    </MudItem>
+                    <MudItem xs="6" md="6" sm="6">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" for="fileInput112" OnClick="@(() => pics.Clear())" FullWidth="true">Clear Images</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            <MudCardContent>
+                <MudTable Items="@Announcement.house.rules" Hover="true" Breakpoint="Breakpoint.None" Height="150px" Dense="@true">
+                    <HeaderContent>
+                        <MudTh>Rule</MudTh>
+                        <MudTh>Penalty</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Rule">
+                            <MudForm Model="@context">
+                                <MudTextField Label="Enter Rule" @bind-Value="context.ruleBody"/>
+                            </MudForm>
+                        </MudTd>
+                        <MudTd DataLabel="Penalty">
+                            <MudForm Model="@context">
+                                <MudNumericField Label="Enter Penalty" @bind-Value="context.penalty"/>
+                            </MudForm>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudCardContent>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+@code {
+	[Inject] ISnackbar Snackbar { get; set; }
+	[Parameter] public int id{ get; set; } = -1;
+
+    MudForm form;
+    public AnnouncementT Announcement { get; set; } = new AnnouncementT {
+        price = -1,
+        house = new HouseT {
+            address = new AddressT {
+            },
+            rules = Enumerable.Range(0,7).Select(_ => new RuleT {
+                                                        ruleBody = "",
+                                                        penalty = 0
+                                                }).ToArray()
+        }
+    };
+    private List<PictureT> pics = new List<PictureT>();
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if(id != -1)
+        {
+            System.Console.WriteLine(id);
+            Announcement = Database.GetA(id);
+            pics = Announcement.house.pictures.ToList();
+            StateHasChanged();
+        }
+    }
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            Announcement.house.pictures = pics.ToArray();
+            if(id != -1)
+            {
+                Database.Update(Announcement);
+            }
+            else
+            {
+                Database.Add(Announcement);
+            }
+            Snackbar.Add("Submited!");
+            Announcement = new AnnouncementT {
+                id = (new Random()).Next(),
+                price = -1,
+                house = new HouseT {
+                    address = new AddressT {
+                    },
+                    rules = Enumerable.Range(0,7).Select(_ => new RuleT {
+                                                                ruleBody = "",
+                                                                penalty = 0
+                                                        }).ToArray()
+                }
+            };
+            pics.Clear();
+            StateHasChanged();
+        }
+    }
+    
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        var entries = e.GetMultipleFiles();
+        foreach (var entry in entries)
+        {
+            var data = await TypeEnhancements.FileToBase64(entry.OpenReadStream(), "jpg");
+            var pic = new PictureT {
+                data = data,
+            };
+            pics.Add(pic);
+        }
+        StateHasChanged();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        //Snackbar.Add($"Files with {entries.FirstOrDefault().Size} bytes size are not allowed", Severity.Error);
+    }
+}

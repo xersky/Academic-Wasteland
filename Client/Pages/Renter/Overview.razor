@@ -1,0 +1,18 @@
+<MudContainer Style="height : 90%; overflow-y : scroll;" Class="mt-8" MaxWidth="MaxWidth.Large">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="6">
+            <Block Title="Announcements Count" Count="Announcements.Count()"/>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <Block Title="Reservataion Count" Count="Reservations.Count()"/>
+        </MudItem>
+        <MudPaper Style="height : 75%; overflow-y : scroll;">
+            <History Reservations="Reservations" Announcements="Announcements" />
+        </MudPaper>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public IEnumerable<AnnouncementT> Announcements { get; set; } 
+    [Parameter] public IEnumerable<ReservationT> Reservations { get; set; } 
+}

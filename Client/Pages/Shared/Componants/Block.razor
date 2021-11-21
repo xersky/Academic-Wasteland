@@ -1,0 +1,25 @@
+<MudCard Style="@Style">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6" Style="color: black">@Title</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        @if(Message is not null){
+            <MudText Style="color: black">@Message</MudText>
+        } else {
+            <MudText Style="color: black">@Count</MudText>
+        }
+        @ChildContent
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public int Count {get; set;}
+    [Parameter] public string Message {get; set;}
+    [Parameter] public string Title {get; set;}
+    [Parameter] public string Background {get; set;}
+    [Parameter] public string Height {get; set;} = "150px";
+    [Parameter] public RenderFragment ChildContent {get; set;}
+    string Style => $"background : {Background}; height: {Height};";
+}

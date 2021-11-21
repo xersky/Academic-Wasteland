@@ -1,0 +1,51 @@
+﻿@inherits LayoutComponentBase
+@inject IAuthentificator Authentificator
+@inject ILocalStorage Manager
+@inject NavigationManager Navigator
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIcon Icon="@Icons.Filled.House" Size="Size.Large" />
+        <MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="true">     Rentudiant</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Filled.Home" Color="Color.Inherit" Link="/" Target="_blank" />
+        @if(!isLogged){
+            <MudIconButton Icon="@Icons.Filled.Login" Color="Color.Inherit" Link="/Auth" Target="_blank" />
+        } else {
+            <MudIconButton Icon="@Icons.Filled.Email" Color="Color.Inherit" Target="_blank" OnClick="GoToProfile"/>
+            <MudIconButton Icon="@Icons.Filled.Logout" Color="Color.Inherit" Link="/Auth/Logout" Target="_blank" />
+        }
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-8 pt-16">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool isLogged {get; set;} = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        isLogged = await Authentificator.IsLoggedIn();
+    }
+
+    private async Task GoToProfile(){
+        var u = await Manager.FetchAsync<UserT>("user");
+        if(u is not null){
+            switch (u.role)
+            {
+                case State.Rentee:
+                    Navigator.NavigateTo($"/Client/{u.id}");
+                    break;
+                case State.Renter :                        
+                    Navigator.NavigateTo($"/Admin/{u.id}");
+                    break;
+            }
+        }
+    }
+}

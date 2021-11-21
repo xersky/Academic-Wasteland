@@ -1,0 +1,46 @@
+@inject IDbLayer db
+<MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Reservations</MudText>
+<MudTabs Elevation="4" Rounded="true" Style="min-width : 80vw;" Centered="true" Color="@Color.Primary">
+    <MudTabPanel Text="Reservations">
+        <MudTable Items="@Reservations" MultiSelection="true" @bind-SelectedItems="selectedItems">
+            <HeaderContent>
+                <MudTh>Owner</MudTh>
+                <MudTh>Contact</MudTh>
+                <MudTh>RoomatesC</MudTh>
+                <MudTh>StartFrom</MudTh>
+                <MudTh>EndsAt</MudTh>
+                <MudTh>CreatedAt</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Nr">@($"{context.owner.lastName} {context.owner.firstName}")</MudTd>
+                <MudTd DataLabel="Sign">@context.owner.email</MudTd>
+                <MudTd DataLabel="Name">@context.users.Count()</MudTd>
+                <MudTd DataLabel="Position">@context.startPeriod</MudTd>
+                <MudTd DataLabel="Molar mass">@context.endPeriod</MudTd>
+                <MudTd DataLabel="Molar mass">@context.createdAt</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+            </PagerContent>
+            <FooterContent>
+                <MudTd colspan="2">Select All</MudTd>
+                <MudTd colspan="2"><MudButton Enabled="false">Edit</MudButton></MudTd>
+                <MudTd colspan="2"><MudButton OnClick="DeleteReservation">Delete</MudButton></MudTd>
+            </FooterContent>
+        </MudTable>
+    </MudTabPanel>
+    <MudTabPanel Text="Offers">
+        <Showcase Announcemets="Announcements"/>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter] public IEnumerable<ReservationT> Reservations { get; set; } 
+    [Parameter] public IEnumerable<AnnouncementT> Announcements { get; set; }
+    private HashSet<ReservationT> selectedItems = new HashSet<ReservationT>();
+    protected void DeleteReservation()
+    {
+        selectedItems.ToList().ForEach(x => db.Remove(x));
+        selectedItems.Clear();
+    }
+}

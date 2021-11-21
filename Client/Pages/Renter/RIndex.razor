@@ -1,0 +1,38 @@
+@page "/Admin/{id:int}"
+@implements IDisposable
+@inject IDbLayer Manager
+
+<MudTabs Outlined="true" Position="Position.Bottom" Rounded="true" Border="true"
+    ApplyEffectsToContainer="true">
+    <MudTabPanel Text="Dashboard">
+        <Overview Reservations="Reservations" Announcements="Announcements"/>
+    </MudTabPanel>
+    <MudTabPanel Text="Add Announcement">
+        <AnnoucementForm/>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter] public int id { get; set; } = 0;
+    public List<AnnouncementT> Announcements { get; set; } = new();
+    public List<ReservationT> Reservations { get; set; } = new();
+    System.Threading.Timer timer;
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (parameters.TryGetValue<int>(nameof(id), out var value))
+        {
+            timer = new System.Threading.Timer(async _ =>
+            {
+                Reservations = Manager.GetR(value, State.Renter).ToList();
+                Announcements = Manager.GetA(value, State.Renter).ToList();
+                await InvokeAsync(StateHasChanged);
+            }, null, 0, 5000);
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}
