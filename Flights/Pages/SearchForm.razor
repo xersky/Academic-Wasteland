@@ -1,0 +1,108 @@
+@page "/form"
+@using Flights.Data
+
+<RadzenTemplateForm Data="@order" Submit="@(async (FilterQuery args) => { await Submit(args); })">
+    <RadzenFieldset Text="Search Info">
+        <div class="row"  style="margin:7px">
+            <div class="align-items-center d-flex col-md-3">
+                <RadzenLabel Text="Departure" />
+            </div>
+            <div class="col-md-9">
+                <RadzenTextBox Placeholder="John F Kennidy" style="width: 100%;" @bind-Value="order.departure" Name="Departure" />
+            </div>
+        </div>
+        <div class="row"  style="margin:7px">
+            <div class="align-items-center d-flex col-md-3">
+                <RadzenLabel Text="Arrival" />
+            </div>
+            <div class="col-md-9">
+                <RadzenTextBox Placeholder="Seoul National Airport" style="width: 100%;" @bind-Value="order.arrival" Name="Arrival" />
+            </div>
+        </div>
+        <div class="row" style="margin:7px">
+            <div class="align-items-center d-flex col-md-3">
+                <RadzenLabel Text="Airline" />
+            </div>
+            <div class="col-md-9">
+                <RadzenTextBox Placeholder="Airbus" style="width: 100%;" Name="Airline" @bind-Value="order.airline"/>
+            </div>
+        </div>
+        <div class="row"  style="margin:7px">
+            <div class="align-items-center d-flex col-md-3">
+                <RadzenLabel Text="Flight" />
+            </div>
+            <div class="col-md-3">
+                <RadzenTextBox Placeholder="F2369420" style="width: 100%;" Name="Flight" @bind-Value="order.flight" />
+            </div>
+            <div class="align-items-center d-flex col-md-2">
+                <RadzenLabel Text="Status" />
+            </div>
+            <div class="col-md-4">
+                <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
+                                Data=@(Enum.GetNames(typeof(FlightStatus)))
+                                Change=@(args => OnChange(args, "DropDown")) />
+            </div>
+        </div>
+        <div class="row"  style="margin:7px">
+            <div class="align-items-center d-flex col-md-3">
+                <RadzenLabel Text="Start Date" />
+            </div>
+            <div class="col-md-3">
+                <RadzenDatePicker style="width: 100%;" Name="OrderDate" @bind-Value="order.flight_date_start" />
+            </div>
+            <div class="align-items-center d-flex col-md-2">
+                <RadzenLabel Text="EndDate" />
+            </div>
+            <div class="col-md-4">
+                <RadzenDatePicker style="width: 100%;" Name="ShipDate" @bind-Value="order.flight_date_end" />
+            </div>
+            <div class="align-items-center d-flex col-md-3">
+            </div>
+            <div class="col-md-5" style="margin-top: 16px;">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="search" Text="Search" />
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="cancel" style="display: inline-block; margin-left: 10px;" Text="Cancel" Click="@Cancel" />
+            </div>
+        </div>
+    </RadzenFieldset>
+</RadzenTemplateForm>
+
+@code {
+
+    private FilterQuery order {get; set;} =  new FilterQuery
+    {
+        flight_status = null,
+        flight_date_start = null,
+        flight_date_end = null,
+        departure = null,
+        arrival = null,
+        airline = null,
+        flight = null
+    };
+
+    [Parameter] public EventCallback<FilterQuery> OnSearchCallback { get; set; }
+
+    void OnChange(object value, string name)
+    {
+        order.flight_status = (FlightStatus)Enum.Parse(typeof(FlightStatus), value.ToString());
+    }
+
+    async Task Submit(FilterQuery arg)
+    {
+        await OnSearchCallback.InvokeAsync(order);
+    }
+
+    async Task Cancel()
+    {
+        order = new FilterQuery
+        {
+            flight_status = null,
+            flight_date_start = null,
+            flight_date_end = null,
+            departure = null,
+            arrival = null,
+            airline = null,
+            flight = null
+        };
+        await OnSearchCallback.InvokeAsync(order);
+    }
+}

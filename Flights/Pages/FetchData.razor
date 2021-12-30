@@ -1,0 +1,85 @@
+﻿@page "/fetchdata"
+
+@inject AviationStackService AviationService
+@inject DialogService DialogService
+
+<SearchForm OnSearchCallback="HandleSearchEvent"/>
+<RadzenDataGrid 
+        AllowFiltering="false" AllowColumnResize="true" 
+        FilterMode="FilterMode.Advanced" PageSize="8" AllowPaging="true" AllowSorting="true"  
+        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+        LogicalFilterOperator="LogicalFilterOperator.Or" Data="@Flights?.Content?.data" TItem="Datum">
+    <Columns>
+        <RadzenDataGridColumn Width="50px" TItem="Datum" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+            <Template Context="data">
+                @(Flights?.Content?.data.IndexOf(data) + 1)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Airline" >
+            <Template Context="data">
+                @(data?.airline?.name)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Flight N°" >
+            <Template Context="data">
+                @(data?.flight?.number)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Departure Date " >
+            <Template Context="data">
+                @(data?.departure?.scheduled)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Departure" >
+            <Template Context="data">
+                @(data?.departure?.airport)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Arrival Date " >
+            <Template Context="data">
+                @(data?.arrival?.estimated)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Destination" >
+            <Template Context="data">
+                @(data?.arrival?.airport)
+            </Template> 
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Datum" Title="Status" >
+            <Template Context="data">
+                @(data?.flight_status)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="160px" TItem="Datum" Title="Details">
+            <Template Context="data">
+                <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="info" Class="m-1" Click=@(() => OpenOrder(data)) Text="+" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@code {
+    RadzenDataGrid<Root<Datum>> ordersGrid;
+    private Response<Root<Datum>>? Flights { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Flights = await AviationService.GetFlightsData(new FilterQuery {});
+    }
+
+    async Task OpenOrder(Datum? data)
+    {
+         await DialogService.OpenAsync<FlightCard>( "Flight Details",
+               new Dictionary<string, object>() { { "Content", data } },
+               new DialogOptions() { Width = "80vw", Height = "75vh" });
+    }
+
+    private async Task HandleSearchEvent(FilterQuery filter){
+        Console.WriteLine(Flights?.Content?.data.Count());
+        Flights = await AviationService.GetFlightsData(filter);
+        Console.WriteLine(Flights?.Content?.data.Count());
+        Console.WriteLine(filter);
+        StateHasChanged();
+    }
+}

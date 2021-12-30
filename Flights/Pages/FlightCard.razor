@@ -1,0 +1,93 @@
+@page "/card"
+
+@inject AviationStackService service
+@if(Content is not null){
+
+<RadzenSplitter >
+    <RadzenSplitterPane>
+        <RadzenCard class="m-3">
+            <h3 class="h5">Flight</h3>
+            <div class="d-flex flex-row">
+                <div>
+                    <div>Flight </div>
+                    <b>@(Content?.flight?.number)</b>
+                    <div class="mt-3">Company</div>
+                    <b>@Content?.airline?.name</b>
+                </div>
+            </div>
+        </RadzenCard>
+        <RadzenCard class="m-3">
+            <h3 class="h5">Flight Details</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div>Departure</div>
+                    <b>@(Content?.departure?.airport)</b>
+                    <div class="mt-3">Departure Date</div>
+                    <b>@(Content?.departure?.scheduled)</b>
+                </div>
+                <div class="col-md-8">
+                    <div>Arrival</div>
+                    <b>@(Content?.arrival?.airport)</b>
+                    <div class="mt-3">Arrival Date</div>
+                    <b>@Content?.arrival?.scheduled</b>
+                </div>
+            </div>
+        </RadzenCard>
+    </RadzenSplitterPane>
+    <RadzenSplitterPane>
+        <div class="row p-3">
+            <div class="col">
+                <RadzenGoogleMap style="height: 70vh" margin="2" Zoom="3" Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 })>
+                    <Markers>
+                        @if(Localisation is not null){
+                            <RadzenGoogleMapMarker Title="@(Content?.departure?.airport)"   Label="@Localisation?.departure?.airport_name" Position=@(GetPosition(Localisation?.departure)) />
+                            <RadzenGoogleMapMarker Title="@(Content?.arrival?.airport)"   Position=@(GetPosition(Localisation?.arrival)) />
+                        }
+
+                        @if(Content?.live?.is_ground ?? false){
+                            <RadzenGoogleMapMarker Title="Airplane " Label="@Content?.flight?.number" Position=@(new GoogleMapPosition() { Lat = Content?.live?.latitude ?? 0, Lng = Content?.live?.longitude ?? 0}) />
+                        }
+                    </Markers>
+                </RadzenGoogleMap>
+            </div>
+        </div>
+    </RadzenSplitterPane>
+</RadzenSplitter>
+
+}
+@code {
+    struct ResultAirports {
+        public Airport departure;
+        public Airport arrival;
+    }
+    [Parameter] public Datum? Content { get; set; } = null; 
+    private ResultAirports? Localisation { get; set; } = null; 
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Content is not null){
+            Localisation = await GetAirports(Content);
+            Console.WriteLine("here");
+            StateHasChanged();
+        }
+    }
+
+    private async Task<ResultAirports> GetAirports(Datum? content)
+    {
+        var departure = await service.GetAirportData(content?.departure?.airport);
+        var arrival   = await service.GetAirportData(content?.arrival?.airport);
+        Console.WriteLine($"{departure?.Content?.airport_name} {arrival?.Content?.airport_name}");
+        return new ResultAirports {
+            departure = departure.Content,
+            arrival   = arrival.Content
+        };
+    } 
+    
+    private GoogleMapPosition? GetPosition(Airport? airport)
+    {
+        return new GoogleMapPosition() {
+            Lat = double.Parse(airport?.latitude ?? "2"),
+            Lng = double.Parse(airport?.longitude ?? "23")
+        };
+    }
+}
