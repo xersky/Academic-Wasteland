@@ -16,6 +16,7 @@ namespace LdapProj.Ldap.Services
         private const string MemberOfAttribute = "memberOf";
         private const string DisplayNameAttribute = "displayName";
         private const string SAMAccountNameAttribute = "sAMAccountName";
+        private const string EmailAttribute = "mail";
         //ldap init configs
         private readonly LdapConfig _config;
         //ldap connectionSocket
@@ -61,7 +62,7 @@ namespace LdapProj.Ldap.Services
                         // we get the display name from the user's entry
                         DisplayName = user.GetAttribute(DisplayNameAttribute).StringValue,
                         // we get the SamAccount Attribute from the user's DN
-                        Username = user.GetAttribute(SAMAccountNameAttribute).StringValue,
+                        Username = user.GetAttribute(EmailAttribute).StringValue,
                         Password = user.GetAttribute("userPassword").StringValue,
                         // we loop over memberships and parse them and return the combined role Flag
                         Role = user.GetAttribute(MemberOfAttribute).StringValueArray
