@@ -1,0 +1,29 @@
+dn: uid=tahaMetougui,ou=people,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+givenName : Taha
+sn: Metougui
+cn: Taha Metougui
+displayName: Taha Metougui
+mail: taha.metougui@stu.ensate.ma
+userPassword: {SSHA}f/9TLgL9wccfcaoE7PONBtsybgL4A5yu
+loginShell: /bin/bash
+homeDirectory: /home/tahaMetougui
+uidNumber: 69000
+gidNumber: 69000
+
+dn: uid=ayoubElAoufi,ou=people,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+givenName : Ayoub
+sn: El Aoufi
+cn: Ayoub El Aoufi
+displayName: Ayoub El Aoufi
+mail: Ayoub.Aoufi@stu.ensate.ma
+userPassword: {SSHA}f/9TLgL9wccfcaoE7PONBtsybgL4A5yu
+loginShell: /bin/bash
+homeDirectory: /home/ayoubElAoufi
+uidNumber: 69000
+gidNumber: 69000

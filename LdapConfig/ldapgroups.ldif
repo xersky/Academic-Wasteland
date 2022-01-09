@@ -1,0 +1,55 @@
+dn: cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Fillieres
+gidNumber: 6000
+
+dn: cn=GI,cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: GI
+gidNumber: 69000
+memberUid: tahaMetougui
+
+dn: cn=GC,cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: GC
+gidNumber: 68000
+
+dn: cn=GM,cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: GM
+gidNumber: 67000
+
+dn: cn=GSTR,cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: GSTR
+gidNumber: 66000
+
+dn: cn=SCM,cn=Fillieres,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: SCM
+gidNumber: 65000
+
+dn: cn=Direction,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Direction
+gidNumber: 7000
+
+dn: cn=Apogee,ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Apogee
+gidNumber: 8000
+
+dn: cn=Routers,ou=materials,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Routers
+gidNumber: 3000
+
+dn: cn=Servers,ou=materials,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Servers
+gidNumber: 4000
+
+dn: cn=Computers,ou=materials,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: posixGroup
+cn: Computers
+gidNumber: 5000

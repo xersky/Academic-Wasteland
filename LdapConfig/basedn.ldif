@@ -1,0 +1,31 @@
+dn: ou=people,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=roles,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalUnit
+ou: roles
+
+dn: ou=groups,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=materials,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalUnit
+ou: materials
+
+dn: cn=Student,ou=roles,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalRole
+cn: Student
+
+dn: cn=Professor,ou=roles,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalRole
+cn: Professor
+
+dn: cn=Admin,ou=roles,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalRole
+cn: Admin
+
+dn: cn=Staff,ou=roles,dc=ensate,dc=uae,dc=ac,dc=ma
+objectClass: organizationalRole
+cn: Staff
