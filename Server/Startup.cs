@@ -1,4 +1,3 @@
-#define DEMO_MODE
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
@@ -32,13 +31,8 @@ namespace LdapProj.Server
             // here we read the ldap config from appsetings.json
             services.Configure<LdapConfig>(Configuration.GetSection("ldap"));
 
-
             // here we inject the Athentication Layer
-#if DEMO_MODE
-            services.AddScoped<IAuthenticationService, AuthenticationTest>();
-#else
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-#endif
             services.AddRazorPages();
         }
 
