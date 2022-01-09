@@ -1,0 +1,68 @@
+@using System.ComponentModel.DataAnnotations
+
+@inject ILoginService AccessGranter
+@inject HttpClient httpClient
+ <MudGrid Stye="margin: 10px;">
+        <MudItem xs="12" sm="6" md="8">
+            <MudCard>
+                <MudCardMedia Image="https://www.guide-metiers.ma/wp-content/uploads/2019/02/ensa-tetouan-couleur.png" Height="650" />
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 80vh;">
+                <div style="max-width: 400px;">
+                    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+                        <DataAnnotationsValidator />
+                        <MudCard>
+                            <MudCardContent>
+                                <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                            @bind-Value="Model.Username" For="@(() => Model.Username)" />
+                                <MudTextField Label="Password" HelperText="Choose a strong password" Class="mt-3"
+                                            @bind-Value="Model.Password" For="@(() => Model.Password)" InputType="InputType.Password" />
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                        <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                            Fill out the form correctly to see the success message.
+                        </MudText>
+
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="Show Validation Summary">
+                                @if (success)
+                                {
+                                    <MudText Color="Color.Success">Success</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Color="@Color.Error">
+                                       <MudText Color="Color.Error">Failed</MudText>
+                                    </MudText>
+                                }
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </EditForm>
+                </div>
+            </MudPaper>
+        </MudItem>
+</MudGrid>
+
+@code {
+    Credentials Model {get; set;} = new Credentials();
+    bool success;
+
+    [Parameter] public EventCallback<AccessToken> OnValidSubmitEvent { get; set; }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        Console.WriteLine(Model);
+        var response = await AccessGranter.Login(Model);
+        success = response.Role == Role.None ? false : true;
+        if(success)
+        {
+            await OnValidSubmitEvent.InvokeAsync(response);
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,120 @@
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+     <MudGrid Stye="margin: 10px;">
+        <MudItem xs="12" sm="12" md="12">
+            <MudPaper>
+                <MudMenu Stye="margin-top: -10px;" TransformOrigin="Origin.TopLeft" Origin="Origin.BottomLeft" Label="Class Management">
+                    <MudMenuItem>Classes</MudMenuItem>
+                    <MudMenuItem>Classes Timeline</MudMenuItem>
+                    <MudMenuItem>Classes Materials</MudMenuItem>
+                </MudMenu>
+                <MudMenu Label="Students Menu" Dense="true">
+                    <MudMenuItem>Students</MudMenuItem>
+                    <MudMenuItem>Classes</MudMenuItem>
+                    <MudMenuItem>Attendance Sheet</MudMenuItem>
+                </MudMenu>
+                <MudMenu Label="Additonal Details" Dense="true">
+                    <MudMenuItem>Classes Reports</MudMenuItem>
+                    <MudMenuItem>Student Reports</MudMenuItem>
+                </MudMenu>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Classes:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(5, 10))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Courses:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(2,5))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Hours Per Week:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(30, 35))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+             <MudGrid Stye="margin: 10px;">
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 300px;">
+                        <GenericCard Title="Courses Of Today:" Subtitle="" >
+                            <MudCarousel ItemsSource="@_source1" Style="height:120px;">
+                                <ItemTemplate>
+                                    <div class="d-flex flex-column flex-column justify-center" style="height:100%">
+                                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                                        <MudText Align="@Align.Center" Class="mx-auto">@context</MudText>
+                                    </div>
+                                </ItemTemplate>
+                            </MudCarousel>
+                        </GenericCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 300px;">
+                        <GenericCard Title="Classes Of Today:" Subtitle="" >
+                            <MudCarousel ItemsSource="@_source2" Style="height:120px;">
+                                <ItemTemplate>
+                                    <div class="d-flex flex-column flex-column justify-center" style="height:100%">
+                                        <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+                                        <MudText Align="@Align.Center" Class="mx-auto">@context</MudText>
+                                    </div>
+                                </ItemTemplate>
+                            </MudCarousel>
+                        </GenericCard>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                <GenericCard Title="Number Of Logged Students:" Subtitle="" >
+                    <div>
+                        <MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px" ChartOptions="chartOptions"></MudChart>
+                        <MudText Typo="Typo.h6">Attendance Progress</MudText>
+                    </div>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    private static Random rng = new Random();
+    private List<string> _source1 {get; set; }
+        = new List<string>() { "UML", "OOP", "JAVA", "LDAP", "JEE", "PHP", "JS", "Web", "AI" }
+                .OrderBy(a => rng.Next())
+                .Take(3).ToList();
+    
+    private List<string> _source2 {get; set; }
+        = new List<string>() { "GI1", "GI2", "GI3", "CP2", "CP1", "GM1", "GM2", "GM3", "GSTR" }
+                .OrderBy(a => rng.Next())
+                .Take(2).ToList();
+    
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+
+    public ChartOptions chartOptions = new ChartOptions();
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    public string[] XAxisLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+    protected override void OnInitialized(){
+        Series = new List<ChartSeries>()
+        {
+            new ChartSeries() { Name = _source2[0], Data = Enumerable.Range(1,12).Select(a => (double)rng.Next(20,50)).ToArray() },
+            new ChartSeries() { Name = _source2[1], Data = Enumerable.Range(1,12).Select(a => (double)rng.Next(20,50)).ToArray() }
+        };
+        StateHasChanged();
+    }
+}

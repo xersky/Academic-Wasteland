@@ -1,0 +1,91 @@
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+     <MudGrid Stye="margin: 10px;">
+        <MudItem xs="12" sm="12" md="12">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 75px;">
+                <MudMenu TransformOrigin="Origin.TopLeft" Origin="Origin.BottomLeft" Label="Users Management">
+                    <MudMenuItem>Get Users</MudMenuItem>
+                    <MudMenuItem>Add User</MudMenuItem>
+                    <MudMenuItem>Remove User</MudMenuItem>
+                </MudMenu>
+                <MudMenu Label="Admins Menu" Dense="true">
+                    <MudMenuItem>Add Admin</MudMenuItem>
+                    <MudMenuItem>Suspend Admin</MudMenuItem>
+                    <MudMenuItem>Get Admins</MudMenuItem>
+                </MudMenu>
+                <MudMenu Label="Additonal Details" Dense="true">
+                    <MudMenuItem>Get Reports</MudMenuItem>
+                </MudMenu>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="0" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Students:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(500, 1000))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Elevation="0" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Staff:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(10, 50))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Elevation="0" Class="pa-4" Style="height: 200px;">
+                <GenericCard Title="Number Of Professors:" Subtitle="" >
+                    <MudTypography variant="h5" className="mt-4">
+                        @(new Random().Next(10, 20))
+                    </MudTypography>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+             <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <GenericCard Title="Number Of Logged Staff:" Subtitle="" >
+                            <MudTypography variant="h5" className="mt-4">
+                                @(new Random().Next(30, 50))
+                            </MudTypography>
+                        </GenericCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;">
+                        <GenericCard Title="Number Of Logged Students:" Subtitle="" >
+                            <MudTypography variant="h5" className="mt-4">
+                                @(new Random().Next(100, 750))
+                            </MudTypography>
+                        </GenericCard>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%">
+                <GenericCard Title="Number Of Logged Students:" Subtitle="" >
+                    <div>
+                        <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+                    </div>
+                    <MudText Typo="Typo.h6">Attendence Per Months</MudText>
+                </GenericCard>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Staff", Data = Enumerable.Range(1,12).Select(_ => (double)(new Random().Next(30,50))).ToArray() },
+        new ChartSeries() { Name = "Students", Data = Enumerable.Range(1,12).Select(_ => (double)(new Random().Next(500,1000))).ToArray() },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" , "Oct" , "Nov" , "Dec" };
+}

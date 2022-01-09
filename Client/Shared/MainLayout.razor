@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+@inject ILoginService AccessGranter
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Filled.Logout" Color="Color.Inherit" Edge="Edge.End" OnClick="Logout"  />
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    async Task Logout(object sender) {
+        await AccessGranter.Logout(null);
+        StateHasChanged();
+    }
+}

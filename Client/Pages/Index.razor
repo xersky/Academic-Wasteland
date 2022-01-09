@@ -1,0 +1,45 @@
+﻿@page "/"
+@inject ILoginService AccessGranter
+/// this page takes care of the role pages handling
+/// it takes token responce from server based on ldap
+/// and that token has the role metadata and based 
+/// on it it renders the role page (static pages)
+
+@if(Token.Role == Role.None){
+    <Login OnValidSubmitEvent="Login" />
+} else {
+    @switch (Token?.Role)
+    {
+        case Role.Student   : <Student/>
+        break;
+        case Role.Teacher   : <Teacher/>
+        break;
+        case Role.Staff     : <Staff/>
+        break;
+        case Role.Admin     : <Admin/>
+        break;
+    }
+}
+
+@code {
+    private AccessToken? _token = new AccessToken {
+        Role = Role.None,
+        Token = ""
+    };
+    private AccessToken? Token {
+        get => _token;
+        set {
+            _token = value;
+            StateHasChanged();
+        }
+    }
+    public void Login(AccessToken token){
+        Token = token;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync(){
+        Token = await AccessGranter.Resume();
+        StateHasChanged();
+    }
+}
