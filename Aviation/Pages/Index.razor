@@ -1,0 +1,54 @@
+@page "/"
+@inject AviationStackService Service
+<MudContainer >
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Main</MudText>
+    <MudPaper>
+        <MudGrid Spacing="3">
+            <MudItem xs="8">
+                <MudText Style="margin:10px" Typo="Typo.h5" GutterBottom="true">Flights List</MudText>
+                <FlightTable Elements="Data" OnSelectedItemChanged="OnItemSelected"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Style="margin:10px" Typo="Typo.h5" GutterBottom="true">Filter</MudText>
+                <FlightForm @ref="Form" OnCancel="OnCancelAsync" OnSubmit="OnSearchAsync" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private IEnumerable<Model> Data { get; set; } = new List<Model>();
+    private FlightForm Form;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = await Service.GetFlightsData(null);
+        StateHasChanged();
+    }
+
+    public async Task OnSearchAsync(Filter query)
+    {
+        Data = Data 
+		   .Where(x => query?.flight is null ? true  :  x?.flight?.Contains(query?.flight) ?? true)//x.flight.Contains(query?.flight ?? ""))
+                   .Where(x => query?.airline is null ? true :  x?.airline?.Contains(query?.airline) ?? true)
+                   .Where(x => query?.departure is null ? true : x?.departure_airport?.Contains(query?.departure) ?? true)
+                   .Where(x => query?.arrival is null ? true : x?.arrival_airport?.Contains(query?.arrival) ?? true)
+                   .Where(x => x.flight_status == query?.flight_status.ToString())
+                   .Where(x => query?.flight_date_end?.Date is null ? true : x.arrival?.Date == query?.flight_date_end?.Date)
+                   .Where(x => query?.flight_date_start?.Date is null ? true : x.departure?.Date == query?.flight_date_start?.Date)
+                   .ToList();
+        StateHasChanged();
+    }
+
+    public async Task OnCancelAsync()
+    {
+        Data = await Service.GetFlightsData(null);
+        StateHasChanged();
+    }
+
+    public void OnItemSelected(Model item)
+    {
+        Form.SetFields(item);
+        StateHasChanged();
+    }
+}

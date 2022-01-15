@@ -1,0 +1,58 @@
+<MudTable Height="55vh;" FixedHeader="true" FixedFooter="true"  Items="@Elements" Dense="false" Hover="true" Bordered="true" Striped="true" Filter="new Func<Model,bool>(FilterFunc1)" @bind-SelectedItem="SelectedItem">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Flights :</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent >
+        <MudTh>Departure</MudTh>
+        <MudTh>Departure Date</MudTh>
+        <MudTh>Arrival</MudTh>
+        <MudTh>Arrival Date</MudTh>
+        <MudTh>Airlines</MudTh>
+        <MudTh>Flight</MudTh>
+        <MudTh>Status</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd >@context?.departure_airport</MudTd>
+        <MudTd >@context?.departure?.ToString("yyyy-MM-dd")</MudTd>
+        <MudTd >@context?.arrival_airport</MudTd>
+        <MudTd >@context?.arrival?.ToString("yyyy-MM-dd")</MudTd>
+        <MudTd >@context?.airline</MudTd>
+        <MudTd >@context?.flight</MudTd>
+        <MudTd >@context?.flight_status</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager  />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private Model selectedItem1 = null;
+    private Model SelectedItem {
+        get => selectedItem1;
+        set {
+            selectedItem1 = value;
+            if (selectedItem1 != null) {
+                OnSelectedItemChanged.Invoke(selectedItem1);
+            }
+        }
+    }
+
+    [Parameter] public Action<Model> OnSelectedItemChanged { get; set; }
+
+    private string searchString1 = "";
+
+    [Parameter] public IEnumerable<Model> Elements { get; set; }
+
+    private bool FilterFunc1(Model element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(Model element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if($"{element?.airline} {element?.flight} {element?.departure_airport} {element?.arrival_airport} {element?.flight_status} {element?.departure} {element?.arrival}".ToLower().Contains(searchString.ToLower()))
+            return true;
+        return false;
+    }
+}

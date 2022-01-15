@@ -1,0 +1,75 @@
+    <MudCard Style="height : 71vh;">
+		<MudForm Model="@model" @ref="@form">
+			<MudCardContent>
+
+					<MudTextField @bind-Value="model.departure"
+								  Immediate="true"
+								  Label="Departure" />
+
+                    <MudTextField @bind-Value="model.arrival"
+								  Immediate="true"
+								  Label="Arrival" />
+
+					<MudTextField @bind-Value="model.flight"
+								  Immediate="true"
+								  Label="Flight Nr" />
+
+					<MudTextField @bind-Value="model.airline"
+								  Immediate="true"
+								  Label="Airline" />
+
+			</MudCardContent>
+			<MudCardContent>
+                <MudSelect T="FlightStatus" @bind-value="model.flight_status" Label="Status" AnchorOrigin="Origin.BottomCenter">
+                    @foreach(var item in Enum.GetNames(typeof(FlightStatus))){
+                        <MudSelectItem Value="@(Enum.Parse<FlightStatus>(item))" Label="@item" />
+                    }
+                </MudSelect>
+
+                <MudDatePicker Label="Editable with Placeholder" Editable="true" @bind-Date="model.flight_date_start" Placeholder="Select Date" />
+
+                <MudDatePicker Label="Editable with Placeholder" Editable="true" @bind-Date="model.flight_date_end" Placeholder="Select Date" />
+			</MudCardContent>
+		</MudForm>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@(async () => await Refresh())">Refresh</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Search</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" Class="ml-auto" OnClick="@(async () => await Cancel())">Cancel</MudButton>
+        </MudCardActions>
+    </MudCard>
+@code {
+    MudForm form;
+
+    Filter model = new Filter();
+    [Parameter] public EventCallback<Filter> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task Submit()
+    {
+        await OnSubmit.InvokeAsync(model);
+    }
+
+    private async Task Cancel()
+    {
+        model = new Filter();
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task Refresh()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    public void SetFields(Model model)
+    {
+        this.model = new Filter {
+            departure = model.departure_airport,
+            arrival = model.arrival_airport,
+            flight = model.flight,
+            airline = model.airline,
+            flight_status = Enum.Parse<FlightStatus>(model.flight_status),
+            flight_date_start = model?.departure,
+            flight_date_end = model?.arrival
+        };
+    }
+}
