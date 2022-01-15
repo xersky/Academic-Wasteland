@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject AviationService Service
+
+<MudContainer >
+    <MudPaper Elevation="0" Style="height : 35vh" >
+        <FForm  OnCancel="OnCancelAsync" OnSubmit="OnSearchAsync" model="SelectedDatum" />
+    </MudPaper>
+    <MudPaper Elevation="3" Style="margin-y : 20px;  height : 55vh; overflow-y : scroll;" >
+        <MudGrid Spacing="3">
+            <MudItem xs="@(ShowCart ? 7 : 12)">
+                <FTable @ref="_tableRef" Elements="Data" OnSelectedItemChanged="OnItemSelected" Count="@(SelectedData.Count())"/>
+            </MudItem>
+            @if(ShowCart){
+                <MudItem xs="5">
+                    <MudText Style="margin:10px" Typo="Typo.h5" GutterBottom="true">Cart</MudText>
+                    <FCart Flights="SelectedData"/>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private FTable _tableRef;
+    private List<Model> Data { get; set; } = new List<Model>();
+    private HashSet<Model> SelectedData { get; set; } = new HashSet<Model>();
+    private Model SelectedDatum { get; set; } = new Model();
+    private bool ShowCart { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = await Service.GetFlightsData();
+        StateHasChanged();
+    }
+
+    public async Task OnSearchAsync(FilterQuery query)
+    {
+        Data = await Service.GetFlightsData(query);
+        StateHasChanged();
+    }
+
+
+    public async Task OnCancelAsync()
+    {
+        Data = await Service.GetFlightsData();
+        StateHasChanged();
+    }
+
+    public async Task OnClearedAsync()
+    {
+        _tableRef.SelectedItems = new HashSet<Model>();
+        SelectedData = new HashSet<Model>();
+        ShowCart = SelectedData.Count > 1;
+        StateHasChanged();
+    }
+    
+    public void OnItemSelected(Model item)
+    {
+        SelectedDatum = item;
+        SelectedData = _tableRef.SelectedItems;
+        ShowCart = SelectedData.Count > 1;
+        StateHasChanged();
+    }
+}

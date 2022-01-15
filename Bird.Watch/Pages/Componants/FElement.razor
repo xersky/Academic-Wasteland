@@ -1,0 +1,24 @@
+@inject Radzen.DialogService DialogService
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>Story of the day</MudText>
+        <MudText Typo="Typo.body2">Flight N° : @Flight?.Flight, Arline : @Flight?.Airline</MudText>
+        <MudText Typo="Typo.body2">Departure From : @Flight?.Departure?.Airport At @Flight?.Departure?.Time?.Date</MudText>
+        <MudText Typo="Typo.body2">Arrival To : @Flight?.Arrival?.Airport At @Flight?.Arrival?.Time?.Date</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(async () => await ShowSelected(Flight))">Learn More</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public Model Flight { get; set; } = null;
+    
+    public async Task ShowSelected(Model item)
+    {
+        await DialogService.OpenAsync<FCard>( "Flight Details",
+               new Dictionary<string, object>() { { "Content", item } },
+               new Radzen.DialogOptions() { Width = "80vw", Height = "75vh" });
+    }
+}

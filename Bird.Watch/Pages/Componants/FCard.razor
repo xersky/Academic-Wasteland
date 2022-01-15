@@ -1,0 +1,100 @@
+@page "/card"
+
+@inject AviationService service
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar Color="Color.Secondary">@(Content?.Flight)</MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">From : @(Content?.Departure?.Airport)</MudText>
+            <MudText Typo="Typo.body2">To : @(Content?.Arrival?.Airport)</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <RadzenSplitter >
+            <RadzenSplitterPane>
+                <RadzenCard class="m-3">
+                    <h3 class="h5">Flight</h3>
+                    <div class="d-flex flex-row">
+                        <div>
+                            <div>Flight </div>
+                            <b>@(Content?.Flight)</b>
+                            <div class="mt-3">Company</div>
+                            <b>@Content?.Airline</b>
+                        </div>
+                    </div>
+                </RadzenCard>
+                <RadzenCard class="m-3">
+                    <h3 class="h5">Flight Details</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div>Departure</div>
+                            <b>@(Content?.Departure?.Airport)</b>
+                            <div class="mt-3">Departure Date</div>
+                            <b>@(Content?.Departure?.Time?.Date)</b>
+                        </div>
+                        <div class="col-md-8">
+                            <div>Arrival</div>
+                            <b>@(Content?.Arrival?.Airport)</b>
+                            <div class="mt-3">Arrival Date</div>
+                            <b>@Content?.Arrival?.Time?.Date</b>
+                        </div>
+                    </div>
+                </RadzenCard>
+            </RadzenSplitterPane>
+            <RadzenSplitterPane>
+                <div class="row p-3">
+                    <div class="col">
+                        <RadzenGoogleMap style="height: 50vh" margin="2" Zoom="3" Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 })>
+                            <Markers>
+                                @if(Localisation is not null){
+                                    <RadzenGoogleMapMarker Title="@(Content?.Departure?.Airport)"   Label="@Localisation?.Departure?.name" Position=@(GetPosition(Localisation?.Departure)) />
+                                    <RadzenGoogleMapMarker Title="@(Content?.Arrival?.Airport)"   Position=@(GetPosition(Localisation?.Arrival)) Label="@Localisation?.Arrival?.name"/>
+                                }
+                            </Markers>
+                        </RadzenGoogleMap>
+                    </div>
+                </div>
+            </RadzenSplitterPane>
+        </RadzenSplitter>
+
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+
+    [Parameter] public Model? Content { get; set; } = null; 
+    private ResultAirports? Localisation { get; set; } = null; 
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Content is not null){
+            Localisation = await GetAirports(Content);
+            Console.WriteLine("here");
+            StateHasChanged();
+        }
+    }
+
+    private async Task<ResultAirports> GetAirports(Model? content)
+    {
+        var departure = await service.GetAirportData(content?.Departure?.Airport);
+        var arrival   = await service.GetAirportData(content?.Arrival?.Airport);
+        return new ResultAirports {
+            Departure = departure,
+            Arrival   = arrival
+        };
+    } 
+    
+    private GoogleMapPosition? GetPosition(Airport? airport)
+    {
+        return new GoogleMapPosition() {
+            Lat = double.Parse(airport?.lat ?? "2"),
+            Lng = double.Parse(airport?.lon ?? "23")
+        };
+    }
+}

@@ -1,0 +1,45 @@
+<MudPaper Width="455px" Height="58vh" Style="overflow-y : scroll;">
+    <MudList Clickable="true">
+    @foreach(Model flight in Flights){
+        <MudListItem Icon="@Icons.Filled.AirplaneTicket" >
+            <MudSwitch T="bool" Color="Color.Secondary" CheckedChanged="@((arg) => SelectFlight(flight))" />
+            <FElement Flight="@flight" />
+        </MudListItem>
+        <MudDivider />
+    }
+    </MudList>
+    <MudListItem Icon="@Icons.Filled.Settings" >
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="Clear" FullWidth="true" >Clear</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" OnClick="Delete" Class="ml-auto">Delete</MudButton>
+        </MudCardActions>
+    </MudListItem>
+</MudPaper>
+
+@code {
+    [Parameter] public HashSet<Model> Flights { get; set; } = new HashSet<Model>();
+    [Parameter] public EventCallback ClearedEvent { get; set; }
+    private HashSet<Model> _flights = new HashSet<Model>();
+
+    private void SelectFlight(Model flight)
+    {
+        _flights.Add(flight);
+    }
+
+    private async Task Clear()
+    {
+        Flights.Clear();
+        await ClearedEvent.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private void Delete()
+    {
+        foreach (Model flight in _flights)
+        {
+            Flights.Remove(flight);
+        }
+        StateHasChanged();
+    }
+
+}

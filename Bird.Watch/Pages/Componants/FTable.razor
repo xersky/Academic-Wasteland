@@ -1,0 +1,89 @@
+<style type="text/css">
+    .mud-table-head .header-centered th {
+        text-align: center;
+        font-size: 1.2em;
+    }
+
+   .mud-table-foot .bold-text .mud-table-cell {
+       font-weight: 500;
+   }
+</style>
+
+<MudTable Items="@Elements" MultiSelection="true" @bind-SelectedItem="SelectedItem" @bind-SelectedItems="SelectedItems" 
+          Bordered="true" FixedHeader="true" FixedFooter="true" Height="50vh" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true" 
+          CustomHeader="true" CustomFooter="true" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6" >Flights : </MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow Class="header-centered">
+            <MudTh colspan="2">Basic</MudTh>
+            <MudTh colspan="2">Departure</MudTh>
+            <MudTh colspan="2">Arrival</MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow IsCheckable="true">
+            <MudTh>Flight N°</MudTh>
+            <MudTh>Airline</MudTh> 
+            <MudTh>Airport</MudTh>
+            <MudTh>Scheduled</MudTh>
+            <MudTh>Airport</MudTh>
+            <MudTh>Scheduled</MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context?.Flight</MudTd>
+        <MudTd>@context?.Airline</MudTd>
+        <MudTd>@context?.Departure?.Airport</MudTd>
+        <MudTd>@context?.Departure?.Time?.Date</MudTd>
+        <MudTd>@context?.Arrival?.Airport</MudTd>
+        <MudTd>@context?.Arrival?.Time?.Date</MudTd>
+    </RowTemplate>
+    <FooterContent>
+        <MudTFootRow Class="bold-text">
+            <MudTd>Flight N°</MudTd>
+            <MudTd>Airline</MudTd>
+            <MudTd>Departure</MudTd>
+            <MudTd>Start Date</MudTd>
+            <MudTd>Arrival</MudTd>
+            <MudTd>End Date</MudTd>
+        </MudTFootRow>
+        <MudTFootRow IsCheckable="true">
+            <MudTd colspan="5">Selected: @Count</MudTd>
+        </MudTFootRow>
+    </FooterContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+    </PagerContent>
+</MudTable>
+@code {
+    [Parameter] public List<Model> Elements {get; set;} = new List<Model>();
+    [Parameter] public int Count {get; set;} = 0;
+    private string searchString = "";
+    private Model selectedItem = new Model();
+    private Model SelectedItem {
+        get => selectedItem;
+        set {
+            selectedItem = value;
+            OnSelectedItem(selectedItem);
+        }
+    }
+
+    private HashSet<Model> selectedItems  = new HashSet<Model>();
+    [Parameter] public HashSet<Model> SelectedItems {
+        get => selectedItems;
+        set {
+            selectedItems = value;
+            OnSelectedItem(selectedItem);
+        }
+    }
+
+    [Parameter] public EventCallback<Model> OnSelectedItemChanged { get; set; }
+
+    private async Task OnSelectedItem(Model arg)
+    {
+        selectedItem = arg;
+        await OnSelectedItemChanged.InvokeAsync(arg);
+    }
+}
