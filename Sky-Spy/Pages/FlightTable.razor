@@ -1,0 +1,74 @@
+<MudTable Height="50vh;" Striped="true" Items="@Elements" Hover="true" Breakpoint="Breakpoint.Sm">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Flights Result</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+	<ColGroup>
+		<col style="width:300px;" />
+		<col style="width:100px;" />
+		<col />
+		<col style="width:100px;" />
+	</ColGroup>
+	<HeaderContent>
+		<MudTh></MudTh>
+		<MudTh>N°</MudTh>
+		<MudTh>Airline</MudTh>
+		<MudTh>Departure</MudTh>
+		<MudTh>Departure Date</MudTh>
+		<MudTh>Destination</MudTh>
+		<MudTh>Arrival Date</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.flight))">@((context.ShowDetails == true)? "Hide" : "Show") Address Details</MudButton></MudTd>
+		<MudTd >@Elements.FindIndex(x => x?.flight == context?.flight)</MudTd>
+		<MudTd >@context?.airline</MudTd>
+		<MudTd >@context?.departure_airport</MudTd>
+		<MudTd >@context?.departure</MudTd>
+		<MudTd >@context?.arrival_airport</MudTd>
+		<MudTd >@context?.arrival</MudTd>
+	</RowTemplate>
+	<ChildRowContent>
+		@if (context.ShowDetails)
+				{
+  <MudTr>
+   <td colspan="12">
+	<MudCard Elevation="0">
+	 <MudCardHeader>
+	  <CardHeaderContent>
+	   <MudText Typo="Typo.body1">Flight Details for Flight N° <strong>@context?.flight</strong></MudText>
+	  </CardHeaderContent>
+	 </MudCardHeader>
+	 <MudCardContent Class="pa-0">
+	  <FlightForm model="context" IsCard="true"/>
+	 </MudCardContent>
+	</MudCard>
+   </td>
+  </MudTr>
+		}
+	</ChildRowContent>
+</MudTable>
+
+@code {
+    private string searchString1 = "";
+
+    [Parameter] public List<Model> Elements { get; set; }
+    [Parameter] public int Index { get; set; }
+
+    private bool FilterFunc1(Model element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(Model element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if($"{element?.airline} {element?.flight} {element?.departure_airport} {element?.arrival_airport} {element?.flight_status} {element?.departure} {element?.arrival}".ToLower().Contains(searchString.ToLower()))
+            return true;
+        return false;
+    }
+
+    private void ShowBtnPress(string nr)
+	{
+		Model tmpFlight = Elements.First(f => f.flight == nr);
+		tmpFlight.ShowDetails = !tmpFlight.ShowDetails;
+	}
+}

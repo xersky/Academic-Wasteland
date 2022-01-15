@@ -1,0 +1,58 @@
+<MudForm Model="@model" @ref="@form">
+    <MudText Style="margin:10px" Typo="Typo.h5" GutterBottom="true">Filter</MudText>
+    <MudGrid>
+        <MudItem xs="6">
+            <MudCardContent>
+                <MudTextField @bind-Value="model.departure_airport"
+                            Immediate="true"
+                            Label="Departure" />
+                <MudTextField @bind-Value="model.arrival_airport"
+                            Immediate="true"
+                            Label="Arrival" />
+                <MudTextField @bind-Value="model.flight"
+                            Immediate="true"
+                            Label="Flight Nr" />
+                <MudTextField @bind-Value="model.airline"
+                            Immediate="true"
+                            Label="Airline" />
+            </MudCardContent>
+        </MudItem>
+        <MudItem xs="6">
+		    <MudCardContent>
+                <MudTextField @bind-Value="model.flight_status"
+                                    Immediate="true"
+                                    Label="Status" />
+
+                <MudDatePicker Label="Editable with Placeholder" Editable="true" @bind-Date="model.departure" Placeholder="Select Date" />
+
+                <MudDatePicker Label="Editable with Placeholder" Editable="true" @bind-Date="model.arrival" Placeholder="Select Date" />
+			</MudCardContent>
+            @if(!IsCard){
+                <MudCardActions>
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Search</MudButton>
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto" OnClick="@(async () => await Cancel())">Cancel</MudButton>
+                </MudCardActions>
+            }
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+@code {
+    MudForm form;
+
+    [Parameter] public Model model { get; set; } = new Model();
+    [Parameter] public EventCallback<Model> OnSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public bool IsCard { get; set; } = false;
+
+    private async Task Submit()
+    {
+        await OnSubmit.InvokeAsync(model);
+    }
+
+    private async Task Cancel()
+    {
+        model = new Model();
+        await OnCancel.InvokeAsync();
+    }
+}

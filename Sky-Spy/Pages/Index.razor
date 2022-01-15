@@ -1,0 +1,44 @@
+@page "/"
+@inject Service Service
+<MudContainer >
+    <MudPaper Elevation="3" Style="margin : 10px;" >
+        <FlightForm OnCancel="OnCancelAsync" OnSubmit="OnSearchAsync" />
+    </MudPaper>
+    <MudPaper Elevation="3" Style="margin : 10px;" >
+        <FlightTable Elements="Data"/>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Model> Data { get; set; } = new List<Model>();
+    private List<Model> OldData { get; set; } = new List<Model>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = await Service.GetFlightsData();
+        OldData = Data;
+        StateHasChanged();
+    }
+
+    public async Task OnSearchAsync(Model query)
+    {
+        Data = OldData 
+		   .Where(x => query?.flight is null ? true  :  x?.flight?.Contains(query?.flight) ?? true)//x.flight.Contains(query?.flight ?? ""))
+                   .Where(x => query?.airline is null ? true :  x?.airline?.Contains(query?.airline) ?? true)
+                   .Where(x => query?.departure_airport is null ? true : x?.departure_airport?.Contains(query?.departure_airport) ?? true)
+                   .Where(x => query?.arrival_airport is null ? true : x?.arrival_airport?.Contains(query?.arrival_airport) ?? true)
+                   .Where(x => query?.flight_status is null ? true : x?.flight_status?.Contains(query?.flight_status) ?? true)
+                   .Where(x => query?.arrival?.Date is null ? true : x.arrival?.Date == query?.arrival?.Date)
+                   .Where(x => query?.departure?.Date is null ? true : x.departure?.Date == query?.departure?.Date)
+                   .ToList();
+        StateHasChanged();
+    }
+
+    public async Task OnCancelAsync()
+    {
+        Data = await Service.GetFlightsData();
+        OldData = Data;
+        StateHasChanged();
+    }
+
+}
