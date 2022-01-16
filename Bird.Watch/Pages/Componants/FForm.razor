@@ -1,40 +1,42 @@
-<MudForm Model="@model" @ref="@form">
+<MudForm Model="@Model" >
     <MudCard Style="height : 71vh;">
         <MudCardContent>
             <MudGrid Spacing="3">
                 <MudItem xs="6">
                     <MudCardContent>
 
-                            <MudTextField @bind-Value="model.departure"
+                            <MudTextField @bind-Value="Model.departure"
                                         Immediate="true"
                                         Label="Departure" />
 
-                            <MudTextField @bind-Value="model.arrival"
+                            <MudTextField @bind-Value="Model.arrival"
                                         Immediate="true"
                                         Label="Arrival" />
 
-                            <MudTextField @bind-Value="model.airline"
+                            <MudTextField @bind-Value="Model.airline"
                                             Immediate="true"
                                             Label="Airline" />
-                            <MudSelect T="String"  Label="Status" AnchorOrigin="Origin.BottomCenter">
-                                @foreach(var item in Enum.GetNames(typeof(FlightStatus))){
+                            <MudSelect T="FlightStatus" bind-Value="Model.flight_status"  Label="Status" AnchorOrigin="Origin.BottomCenter">
+                                @foreach(var item in Enum.GetValues<FlightStatus>()){
                                     <MudSelectItem Value="@item" Label="@item" />
                                 }
                             </MudSelect>
                     </MudCardContent>
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField @bind-Value="model.flight"
-                                Immediate="true"
-                                Label="Flight Nr" />
+                    <MudCardContent>
+                        <MudTextField @bind-Value="Model.flight"
+                                    Immediate="true"
+                                    Label="Flight Nr" />
 
-                    <MudDatePicker Label="Departure Date" Editable="true" @bind-Date="model.flight_date_start" Placeholder="Select Date" />
-                    <MudDatePicker Label="Arrival Date" Editable="true" @bind-Date="model.flight_date_end" Placeholder="Select Date" />
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="ml-auto" OnClick="@(async () => await Refresh())">Refresh</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" FullWidth="true" OnClick="@(async () => await Submit())">Search</MudButton>
-                        <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" Class="ml-auto" OnClick="@(async () => await Cancel())">Cancel</MudButton>
-                    </MudCardActions>
+                        <MudDatePicker Label="Departure Date" Editable="true" @bind-Date="Model.flight_date_start" Placeholder="Select Date" />
+                        <MudDatePicker Label="Arrival Date" Editable="true" @bind-Date="Model.flight_date_end" Placeholder="Select Date" />
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Class="ml-auto" OnClick="@(async () => await Refresh())">Refresh</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" FullWidth="true" OnClick="@(async () => await Submit())">Search</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true" Class="ml-auto" OnClick="@(async () => await Cancel())">Cancel</MudButton>
+                        </MudCardActions>
+                    </MudCardContent>
                 </MudItem>
             </MudGrid>
         </MudCardContent>
@@ -42,20 +44,18 @@
 </MudForm>
 
 @code {
-    MudForm form;
-
-    [Parameter] public FilterQuery model {get; set;} = new FilterQuery();
+    [Parameter] public FilterQuery Model {get; set;} = new FilterQuery();
     [Parameter] public EventCallback<FilterQuery> OnSubmit { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 
     private async Task Submit()
     {
-        await OnSubmit.InvokeAsync(model);
+        await OnSubmit.InvokeAsync(Model);
     }
 
     private async Task Cancel()
     {
-        model = new FilterQuery();
+        Model = new FilterQuery();
         await OnCancel.InvokeAsync();
     }
 

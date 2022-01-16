@@ -10,8 +10,9 @@
 </style>
 
 <MudTable Items="@Elements" MultiSelection="true" @bind-SelectedItem="SelectedItem" @bind-SelectedItems="SelectedItems" 
-          Bordered="true" FixedHeader="true" FixedFooter="true" Height="50vh" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true" 
-          CustomHeader="true" CustomFooter="true" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered">
+          Bordered="true" FixedHeader="true" FixedFooter="true" Height="40vh" Width="75vw" Hover="true" Breakpoint="Breakpoint.Sm" Striped="true" 
+          CustomHeader="true" CustomFooter="true" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered"
+          Filter="@((m) => LocalSearchFilter(m, searchString))">
     <ToolBarContent>
         <MudText Typo="Typo.h6" >Flights : </MudText>
         <MudSpacer />
@@ -85,5 +86,16 @@
     {
         selectedItem = arg;
         await OnSelectedItemChanged.InvokeAsync(arg);
+    }
+
+    private bool LocalSearchFilter(Model element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if ($@" {element?.Departure?.Airport} {element?.Departure?.Time}
+                {element?.Arrival?.Airport} {element?.Arrival?.Time}
+                {element.Flight_Status} {element.Flight} {element.Airline}".Contains(searchString))
+            return true;
+        return false;
     }
 }

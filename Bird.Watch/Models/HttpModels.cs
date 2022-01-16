@@ -19,7 +19,7 @@ namespace Bird.Watch.Models
     }
 
     public record FilterQuery {
-        public FlightStatus flight_status { get; set; } = FlightStatus.scheduled;
+        public FlightStatus flight_status { get; set; } = FlightStatus.unknown;
         public DateTime? flight_date_start { get; set; }
         public DateTime? flight_date_end { get; set; }
         public string? departure { get; set; }

@@ -1,5 +1,3 @@
-@page "/card"
-
 @inject AviationService service
 <MudCard>
     <MudCardHeader>
@@ -17,39 +15,45 @@
     <MudCardContent>
         <RadzenSplitter >
             <RadzenSplitterPane>
-                <RadzenCard class="m-3">
-                    <h3 class="h5">Flight</h3>
-                    <div class="d-flex flex-row">
-                        <div>
-                            <div>Flight </div>
-                            <b>@(Content?.Flight)</b>
-                            <div class="mt-3">Company</div>
-                            <b>@Content?.Airline</b>
-                        </div>
-                    </div>
-                </RadzenCard>
-                <RadzenCard class="m-3">
-                    <h3 class="h5">Flight Details</h3>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div>Departure</div>
-                            <b>@(Content?.Departure?.Airport)</b>
-                            <div class="mt-3">Departure Date</div>
-                            <b>@(Content?.Departure?.Time?.Date)</b>
-                        </div>
-                        <div class="col-md-8">
-                            <div>Arrival</div>
-                            <b>@(Content?.Arrival?.Airport)</b>
-                            <div class="mt-3">Arrival Date</div>
-                            <b>@Content?.Arrival?.Time?.Date</b>
-                        </div>
-                    </div>
-                </RadzenCard>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <RadzenCard class="m-3">
+                            <h3 class="h5">Flight</h3>
+                            <div class="d-flex flex-row">
+                                <div>
+                                    <div>Flight </div>
+                                    <b>@(Content?.Flight)</b>
+                                    <div class="mt-3">Company</div>
+                                    <b>@Content?.Airline</b>
+                                </div>
+                            </div>
+                        </RadzenCard>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <RadzenCard class="m-3">
+                            <h3 class="h5">Flight Details</h3>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div>Departure</div>
+                                    <b>@(Content?.Departure?.Airport)</b>
+                                    <div class="mt-3">Departure Date</div>
+                                    <b>@(Content?.Departure?.Time?.Date)</b>
+                                </div>
+                                <div class="col-md-8">
+                                    <div>Arrival</div>
+                                    <b>@(Content?.Arrival?.Airport)</b>
+                                    <div class="mt-3">Arrival Date</div>
+                                    <b>@Content?.Arrival?.Time?.Date</b>
+                                </div>
+                            </div>
+                        </RadzenCard>
+                    </MudItem>
+                </MudGrid>
             </RadzenSplitterPane>
             <RadzenSplitterPane>
                 <div class="row p-3">
                     <div class="col">
-                        <RadzenGoogleMap style="height: 50vh" margin="2" Zoom="3" Center=@(new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 })>
+                        <RadzenGoogleMap style="height: 50vh" margin="2" Zoom="3" Center="@position">
                             <Markers>
                                 @if(Localisation is not null){
                                     <RadzenGoogleMapMarker Title="@(Content?.Departure?.Airport)"   Label="@Localisation?.Departure?.name" Position=@(GetPosition(Localisation?.Departure)) />
@@ -70,7 +74,7 @@
 
     [Parameter] public Model? Content { get; set; } = null; 
     private ResultAirports? Localisation { get; set; } = null; 
-    
+    private GoogleMapPosition position { get; set; } = new GoogleMapPosition() { Lat = 42.6977, Lng = 23.3219 };
     protected override async Task OnParametersSetAsync()
     {
         if(Content is not null){
@@ -84,6 +88,8 @@
     {
         var departure = await service.GetAirportData(content?.Departure?.Airport);
         var arrival   = await service.GetAirportData(content?.Arrival?.Airport);
+        position = GetPosition(departure);
+        StateHasChanged();
         return new ResultAirports {
             Departure = departure,
             Arrival   = arrival

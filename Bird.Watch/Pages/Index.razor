@@ -3,15 +3,15 @@
 
 <MudContainer >
     <MudPaper Elevation="0" Style="height : 35vh" >
-        <FForm  OnCancel="OnCancelAsync" OnSubmit="OnSearchAsync" model="SelectedDatum" />
+        <FForm  OnCancel="OnCancelAsync" OnSubmit="OnSearchAsync" Model="SelectedDatum" />
     </MudPaper>
     <MudPaper Elevation="3" Style="margin-y : 20px;  height : 55vh; overflow-y : scroll;" >
         <MudGrid Spacing="3">
-            <MudItem xs="@(ShowCart ? 7 : 12)">
+            <MudItem xs="@(ShowCart ? 7 : 12)" Style="margin:10px;">
                 <FTable @ref="_tableRef" Elements="Data" OnSelectedItemChanged="OnItemSelected" Count="@(SelectedData.Count())"/>
             </MudItem>
             @if(ShowCart){
-                <MudItem xs="5">
+                <MudItem xs="4" Style="margin:10px;">
                     <MudText Style="margin:10px" Typo="Typo.h5" GutterBottom="true">Cart</MudText>
                     <FCart Flights="SelectedData"/>
                 </MudItem>
