@@ -19,7 +19,7 @@ namespace Bird.Watch.Services
             public DateTime CacheTime;
         }
         private Airport[] _ports { get; set; } = null;
-        private readonly string _accessKey = "{{API_KEY}}";
+        private readonly string _accessKey = "{{ACCESS_KEY}}";
         private static stamp? _cache = null;
         private readonly HttpClient client = new HttpClient();
 
@@ -48,7 +48,7 @@ namespace Bird.Watch.Services
                                 (query?.airline is null                 ? true  :  x?.airline?.name?.Contains(query?.airline) ?? true) &&
                                 (query?.departure is null               ? true  : x?.departure?.airport?.Contains(query?.departure) ?? true) &&
                                 (query?.arrival is null                 ? true  : x?.arrival?.airport?.Contains(query?.arrival) ?? true) &&
-                                (query?.flight_status is null           ? true  : x.flight_status == query?.flight_status.ToString() )&&
+                                (query?.flight_status == FlightStatus.unknown  || x.flight_status == query?.flight_status.ToString() )&&
                                 (query?.flight_date_end?.Date is null   ? true  : x.arrival?.scheduled?.Date == query?.flight_date_end?.Date) &&
                                 (query?.flight_date_start?.Date is null ? true  : x.departure?.scheduled?.Date == query?.flight_date_start?.Date)
                             select (Model)x;
