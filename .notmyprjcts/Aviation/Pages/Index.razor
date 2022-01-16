@@ -17,18 +17,20 @@
 </MudContainer>
 
 @code {
+    private IEnumerable<Model> FilteredData { get; set; } = new List<Model>();
     private IEnumerable<Model> Data { get; set; } = new List<Model>();
     private FlightForm Form;
 
     protected override async Task OnInitializedAsync()
     {
         Data = await Service.GetFlightsData(null);
+        FilteredData = Data;
         StateHasChanged();
     }
 
     public async Task OnSearchAsync(Filter query)
     {
-        Data = Data 
+        FilteredData = Data 
 		   .Where(x => query?.flight is null ? true  :  x?.flight?.Contains(query?.flight) ?? true)//x.flight.Contains(query?.flight ?? ""))
                    .Where(x => query?.airline is null ? true :  x?.airline?.Contains(query?.airline) ?? true)
                    .Where(x => query?.departure is null ? true : x?.departure_airport?.Contains(query?.departure) ?? true)
@@ -40,9 +42,9 @@
         StateHasChanged();
     }
 
-    public async Task OnCancelAsync()
+    public async Task OnCancelAsync(bool fromCache)
     {
-        Data = await Service.GetFlightsData(null);
+        FilteredData = fromCache ? Data : await Service.GetFlightsData(null);
         StateHasChanged();
     }
 
