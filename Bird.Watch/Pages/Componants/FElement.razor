@@ -1,4 +1,4 @@
-@inject Radzen.DialogService DialogService
+@inject IDialogService _DialogService
 
 <MudCard Outlined="true">
     <MudCardContent>
@@ -17,8 +17,8 @@
     
     public async Task ShowSelected(Model item)
     {
-        await DialogService.OpenAsync<FCard>( "Flight Details",
-               new Dictionary<string, object>() { { "Content", item } },
-               new Radzen.DialogOptions() { Width = "80vw", Height = "75vh" });
+        _DialogService.Show<FCard>( "Flight Details",
+               new MudBlazor.DialogParameters { { "Content", item } },
+               new MudBlazor.DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
 }

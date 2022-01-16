@@ -1,11 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" />
 <MudSnackbarProvider />
-<RadzenDialog/>
+<MudDialogProvider/>
 <RadzenNotification/>
 <RadzenContextMenu/>
 <RadzenTooltip/>
+
 <MudPaper Style="background-image: url('https://images.hdqwalls.com/download/plane-artwork-4k-4g-1024x768.jpg');
                  background-position: left;
                  background-attachment: fixed;
@@ -15,7 +16,7 @@
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"/>
             <MudSpacer />
             <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/Garderoben/MudBlazor" Target="_blank" />
+            <MudSwitch Icon="@Icons.Custom.Brands.GitHub" @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode"/>
         </MudAppBar>
         <MudMainContent>
             <MudContainer MaxWidth="MaxWidth.Large" Class="my-4 pt-4">
@@ -24,3 +25,7 @@
         </MudMainContent>
     </MudLayout>
 </MudPaper>
+
+@code {
+    private bool _isDarkMode = true;
+}

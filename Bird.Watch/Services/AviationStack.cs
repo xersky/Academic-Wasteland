@@ -19,7 +19,7 @@ namespace Bird.Watch.Services
             public DateTime CacheTime;
         }
         private Airport[] _ports { get; set; } = null;
-        private readonly string _accessKey = "{{ACCESS_KEY}}";
+        private readonly string _accessKey = "{{API_KEY}}";
         private static stamp? _cache = null;
         private readonly HttpClient client = new HttpClient();
 
