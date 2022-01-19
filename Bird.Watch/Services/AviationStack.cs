@@ -26,12 +26,12 @@ namespace Bird.Watch.Services
         public async Task<List<Model>> GetFlightsData(FilterQuery query = null)
         {
             System.Console.WriteLine($"Here Invoked {query}");
-            if(_cache is null || _cache.CacheTime < DateTime.Now.AddMinutes(-10))
+            if(_cache is null || _cache.CacheTime < DateTime.Now.AddMinutes(-10) || query is not null)
             {
 #if Local
                 var result = await client.GetAsync($"http://api.aviationstack.com/v1/flights?access_key={_accessKey}");
 #else
-                var result = await client.GetAsync(await query.ToStringAsync(_accessKey));
+                var result = await client.GetAsync(query is null ? $"http://api.aviationstack.com/v1/flights?access_key={_accessKey}" : await query.ToStringAsync(_accessKey));
 #endif
                 var flightsresponse = await JsonSerializer.DeserializeAsync<Root<Datum>>(await result.Content.ReadAsStreamAsync());
                 _cache = new stamp {
